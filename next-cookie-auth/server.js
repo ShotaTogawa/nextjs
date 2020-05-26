@@ -32,8 +32,18 @@ app.prepare().then(() => {
   server.use(express.json());
   server.use(cookieParser(COOKIE_SECRET));
 
-  server.get('*', (req, res) => {
-    return handle(req, res);
+  server.get('/api/profile', async (req, res) => {
+    const { signedCookies = {} } = req;
+    const { token } = signedCookies;
+    console.log(token);
+    if (token && token.email) {
+      const { data } = await axios.get(
+        'https://jsonplaceholder.typicode.com/users'
+      );
+      const userProfile = data.find((user) => user.email === token.email);
+      return res.json({ user: userProfile });
+    }
+    res.sendStatus(404);
   });
 
   server.post('/api/login', async (req, res) => {
@@ -49,6 +59,10 @@ app.prepare().then(() => {
     };
     res.cookie('token', userData, COOKIE_OPTIONS);
     res.send(userData);
+  });
+
+  server.get('*', (req, res) => {
+    return handle(req, res);
   });
 
   server.listen(port, (err) => {
