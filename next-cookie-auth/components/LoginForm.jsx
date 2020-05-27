@@ -1,12 +1,12 @@
-import { loginUser } from '../lib/auth';
 import Router from 'next/router';
+import { loginUser } from '../lib/auth';
 
 class LoginForm extends React.Component {
   state = {
-    email: 'Sincere@april.biz',
-    password: 'hildegard.org',
-    error: '',
+    email: 'Lucio_Hettinger@annie.ca',
+    password: 'demarco.info',
     isLoading: false,
+    error: '',
   };
 
   handleChange = (event) => {
@@ -14,17 +14,19 @@ class LoginForm extends React.Component {
   };
 
   handleSubmit = (event) => {
+    const { email, password } = this.state;
+
     event.preventDefault();
     this.setState({ error: '', isLoading: true });
-    const { email, password } = this.state;
-    loginUser(email, password)
+    loginUser({ email, password })
       .then(() => {
         Router.push('/profile');
+        this.setState({ isLoading: false });
       })
-      .catch(this.showError);
+      .catch(this.setError);
   };
 
-  showError = (err) => {
+  setError = (err) => {
     console.error(err);
     const error = (err.response && err.response.data) || err.message;
     this.setState({ error, isLoading: false });
@@ -32,13 +34,14 @@ class LoginForm extends React.Component {
 
   render() {
     const { email, password, error, isLoading } = this.state;
+
     return (
       <form onSubmit={this.handleSubmit}>
         <div>
           <input
             type="email"
-            name="email"
             placeholder="email"
+            name="email"
             value={email}
             onChange={this.handleChange}
           />
@@ -52,8 +55,8 @@ class LoginForm extends React.Component {
             onChange={this.handleChange}
           />
         </div>
-        <button disabled={isLoading} type="submit">
-          {isLoading ? 'Sending' : 'Login'}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Sending' : 'Submit'}
         </button>
         {error && <div>{error}</div>}
       </form>

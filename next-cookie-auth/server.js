@@ -1,20 +1,20 @@
 const next = require('next');
 const express = require('express');
-const axios = require('axios');
 const cookieParser = require('cookie-parser');
+const axios = require('axios');
 
-const dev = process.env.NODE_DEV !== 'production';
-const port = process.env.PORT || 3000;
-const app = next({ dev });
-const handle = app.getRequestHandler();
+const dev = process.env.NODE_ENV !== 'production';
 
 const AUTH_USER_TYPE = 'authenticated';
-const COOKIE_SECRET = 'fkopdakopk';
+const COOKIE_SECRET = 'secret123';
 const COOKIE_OPTIONS = {
-  httpOnly: true,
+  // domain: 'YOUR_DOMAIN',
+  // path: "/",
   secure: !dev,
+  httpOnly: true,
   signed: true,
 };
+
 const authenticate = async (email, password) => {
   const { data } = await axios.get(
     'https://jsonplaceholder.typicode.com/users'
@@ -26,16 +26,39 @@ const authenticate = async (email, password) => {
   });
 };
 
+const port = process.env.PORT || 3000;
+const app = next({ dev });
+const handle = app.getRequestHandler();
+
 app.prepare().then(() => {
   const server = express();
 
   server.use(express.json());
   server.use(cookieParser(COOKIE_SECRET));
 
+  server.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+    const user = await authenticate(email, password);
+    if (!user) {
+      return res.status(403).send('Invalid email or password');
+    }
+    const userData = {
+      name: user.name,
+      email: user.email,
+      type: AUTH_USER_TYPE,
+    };
+    res.cookie('token', userData, COOKIE_OPTIONS);
+    res.json(userData);
+  });
+
+  server.post('/api/logout', (req, res) => {
+    res.clearCookie('token', COOKIE_OPTIONS);
+    res.sendStatus(204);
+  });
+
   server.get('/api/profile', async (req, res) => {
     const { signedCookies = {} } = req;
     const { token } = signedCookies;
-    console.log(token);
     if (token && token.email) {
       const { data } = await axios.get(
         'https://jsonplaceholder.typicode.com/users'
@@ -44,21 +67,6 @@ app.prepare().then(() => {
       return res.json({ user: userProfile });
     }
     res.sendStatus(404);
-  });
-
-  server.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
-    const user = await authenticate(email, password);
-    if (!user) {
-      return res.status(403).send('Invalid or password');
-    }
-    const userData = {
-      name: user.email,
-      email: user.email,
-      type: AUTH_USER_TYPE,
-    };
-    res.cookie('token', userData, COOKIE_OPTIONS);
-    res.send(userData);
   });
 
   server.get('*', (req, res) => {
