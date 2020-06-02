@@ -1,7 +1,5 @@
 import axios from 'axios';
 import Thumbnail from '../../components/Thumbnail';
-import ThumbnailWithSass from '../../components/ThumbnailWithSass';
-import Thumbnail from '../../components/Thumbnail';
 
 const Home = ({ shows }) => {
   const renderShows = () => {
@@ -9,7 +7,10 @@ const Home = ({ shows }) => {
       const { show } = showItem;
       return (
         <li key={index}>
-          <Thumbnail imageUrl={show.image.medium} caption={show.name} />
+          <Thumbnail
+            imageUrl={(show.image && show.image.medium) || undefined}
+            caption={show.name}
+          />
         </li>
       );
     });

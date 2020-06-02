@@ -3,7 +3,7 @@ import css from 'styled-jsx/css';
 
 const ThumbnailStyles = css`
   .thumbnail__image {
-    width: 100%;
+    width: 10%;
   }
 
   .thumbnail__caption {
