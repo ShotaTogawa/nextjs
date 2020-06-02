@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Thumbnail from '../../components/Thumbnail';
+import ThumbnailWithSass from '../../components/ThumbnailWithSass';
+import Thumbnail from '../../components/Thumbnail';
 
 const Home = ({ shows }) => {
   const renderShows = () => {
