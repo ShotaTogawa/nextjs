@@ -40,7 +40,7 @@ ShowDetail.getInitialProps = async ({ query }) => {
   try {
     const { showId } = query;
     const response = await axios.get(
-      `http://api.tvmaze.com/shows/${showId}?embed=cast`
+      `https://api.tvmaze.com/shows/${showId}?embed=cast`
     );
     return {
       show: response.data,
