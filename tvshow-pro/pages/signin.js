@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import CustomInput from '../components/CustomInput';
+import axios from 'axios';
+import cookies from 'nookies';
+import { useRouter } from 'next/router';
 
 const initialState = {
   email: '',
@@ -8,15 +11,25 @@ const initialState = {
 
 const Signin = () => {
   const [signinInfo, setSigninInfo] = useState(initialState);
+  const router = useRouter();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSigninInfo({ ...signinInfo, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(signinInfo);
+    try {
+      const response = await axios.post(
+        'https://iwallet-api.herokuapp.com/api/auth/signin',
+        { ...signinInfo }
+      );
+      cookies.set(null, 'token', response.data.token, { path: '/' });
+      router.replace('/[country]', '/us');
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <div className="signin">
