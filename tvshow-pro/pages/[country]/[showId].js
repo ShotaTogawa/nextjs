@@ -1,9 +1,22 @@
 import axios from 'axios';
 import parse from 'html-react-parser';
 import Cast from '../../components/Cast';
+import Error from 'next/error';
+// ファイル名は_errorでないいけない
+import CustomError from '../_error';
 
-const ShowDetail = ({ show }) => {
+const ShowDetail = ({ show = {}, statusCode }) => {
   const { name, image, summary, _embedded } = show;
+
+  if (statusCode) {
+    return (
+      <CustomError
+        statusCode={statusCode}
+        title="Oops! There was a problem here"
+      />
+    );
+  }
+
   return (
     <div className="show-details">
       <div
@@ -24,13 +37,19 @@ const ShowDetail = ({ show }) => {
 };
 
 ShowDetail.getInitialProps = async ({ query }) => {
-  const { showId } = query;
-  const response = await axios.get(
-    `http://api.tvmaze.com/shows/${showId}?embed=cast`
-  );
-  return {
-    show: response.data,
-  };
+  try {
+    const { showId } = query;
+    const response = await axios.get(
+      `http://api.tvmaze.com/shows/${showId}?embed=cast`
+    );
+    return {
+      show: response.data,
+    };
+  } catch (e) {
+    return {
+      statusCode: e.response ? e.response.status : 500,
+    };
+  }
 };
 
 export default ShowDetail;

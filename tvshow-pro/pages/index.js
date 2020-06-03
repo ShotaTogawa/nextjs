@@ -1,11 +1,14 @@
+import Router from 'next/router';
 
-const Home = () => {
-  return (
-    <div>
-      Home
-    </div>
-  )
-}
+const Home = () => null;
 
+Home.getInitialProps = (context) => {
+  const country = context.query.country || 'us';
+  process.browser
+    ? Router.replace('/[country]', `${country}`)
+    : context.res.writeHead(302, { Location: `/${country}` });
 
-export default Home
+  context.res.end();
+};
+
+export default Home;
