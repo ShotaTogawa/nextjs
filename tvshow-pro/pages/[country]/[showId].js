@@ -4,6 +4,7 @@ import Cast from '../../components/Cast';
 import Error from 'next/error';
 // ファイル名は_errorでないいけない
 import CustomError from '../_error';
+import { withAuthorization } from '../../utils/withAuthorization';
 
 const ShowDetail = ({ show = {}, statusCode }) => {
   const { name, image, summary, _embedded } = show;
@@ -52,4 +53,4 @@ ShowDetail.getInitialProps = async ({ query }) => {
   }
 };
 
-export default ShowDetail;
+export default withAuthorization(ShowDetail);
