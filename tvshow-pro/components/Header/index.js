@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import cookies from 'nookies';
 
 const countries = [
   {
@@ -11,7 +12,15 @@ const countries = [
 
 const Header = () => {
   const router = useRouter();
+
   const [selectedCountry, setSelectedCountry] = useState(router.query.country);
+
+  useEffect(() => {
+    cookies.set(null, 'defaultCountry', selectedCountry, {
+      maxAge: 30 * 24 * 60 * 60,
+      path: '/',
+    });
+  }, [selectedCountry]);
 
   const renderCountries = () => {
     return countries.map((country) => {
@@ -30,7 +39,7 @@ const Header = () => {
   };
   return (
     <div className="header">
-      <select value={selectedCountry} onChange={(e) => onChange(e)}>
+      <select value={selectedCountry} onChange={onChange}>
         {renderCountries()}
       </select>
       <style jsx>{`

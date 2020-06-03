@@ -7,6 +7,15 @@ function MyApp({ Component, pageProps }) {
       <Header />
       <Component {...pageProps} />
       <style jsx>{`
+        @font-face {
+          font-family: 'raleway';
+          src: url('/fonts/Raleway/Raleway-Medium.ttf') format('truetype');
+        }
+
+        :global(html) {
+          font-family: 'raleway';
+        }
+
         :global(ul) {
           padding: 0;
           margin: 0;
