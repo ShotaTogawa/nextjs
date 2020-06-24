@@ -43,6 +43,10 @@ function MyApp({ Component, pageProps }) {
           background-color: blue;
           color: white;
         }
+
+        :global(.error) {
+          color: red;
+        }
       `}</style>
     </>
   );
