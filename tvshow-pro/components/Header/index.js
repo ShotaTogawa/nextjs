@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import cookies from 'nookies';
+import Link from 'next/link';
+import { isAuthenticated } from '../../utils/withAuthorization';
 
 const countries = [
   {
@@ -16,10 +18,12 @@ const Header = () => {
   const [selectedCountry, setSelectedCountry] = useState(router.query.country);
 
   useEffect(() => {
-    cookies.set(null, 'defaultCountry', selectedCountry, {
-      maxAge: 30 * 24 * 60 * 60,
-      path: '/',
-    });
+    if (selectedCountry) {
+      cookies.set(null, 'defaultCountry', selectedCountry, {
+        maxAge: 30 * 24 * 60 * 60,
+        path: '/',
+      });
+    }
   }, [selectedCountry]);
 
   const renderCountries = () => {
@@ -32,6 +36,10 @@ const Header = () => {
     });
   };
 
+  const handleSignOut = () => {
+    cookies.destroy(null, 'token');
+  };
+
   const onChange = (e) => {
     setSelectedCountry(e.target.value);
     // /country
@@ -42,6 +50,12 @@ const Header = () => {
       <select value={selectedCountry} onChange={onChange}>
         {renderCountries()}
       </select>
+
+      {isAuthenticated() && (
+        <Link href="/[country]" as={`/${selectedCountry}`}>
+          <a onClick={handleSignOut}>Sign out</a>
+        </Link>
+      )}
       <style jsx>{`
         .header {
           padding: 20px;
@@ -49,6 +63,12 @@ const Header = () => {
           background-color: #333;
           color: #fff;
           text-align: center;
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .header > :global(a) {
+          color: #fff;
         }
       `}</style>
     </div>

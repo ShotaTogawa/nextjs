@@ -5,10 +5,17 @@ import Router from 'next/router';
 
 const authenticate = (context) => {
   const { token } = cookies.get(context);
+
+  cookies.set(
+    context,
+    'plannedRoute',
+    JSON.stringify({ as: context.asPath, href: context.pathname }),
+    { path: '/' }
+  );
   if (context.req && !token) {
     // if it not present, redierect user to signin page
     context.res.writeHead(302, { Location: '/signin' });
-    context.read();
+    context.res.end();
     return;
   }
   if (!token) {
@@ -32,4 +39,10 @@ export const withAuthorization = (WrappedComponent) => {
       return <WrappedComponent {...this.props} />;
     }
   };
+};
+
+export const isAuthenticated = (context) => {
+  const { token } = cookies.get(context);
+
+  return token;
 };
