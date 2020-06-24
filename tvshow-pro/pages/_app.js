@@ -7,10 +7,45 @@ function MyApp({ Component, pageProps }) {
       <Header />
       <Component {...pageProps} />
       <style jsx>{`
+        @font-face {
+          font-family: 'raleway';
+          src: url('/fonts/Raleway/Raleway-Medium.ttf') format('truetype');
+        }
+
+        :global(html) {
+          font-family: 'raleway';
+        }
+
         :global(ul) {
           padding: 0;
           margin: 0;
           list-style-type: none;
+        }
+
+        :global(form) {
+          display: flex;
+          width: 100%;
+          flex-direction: column;
+          text-align: center;
+        }
+
+        :global(input) {
+          margin-bottom: 10px;
+          padding: 10px;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        :global(button) {
+          padding: 10px;
+          margin-bottom: 10px;
+          cursor: pointer;
+          background-color: blue;
+          color: white;
+        }
+
+        :global(.error) {
+          color: red;
         }
       `}</style>
     </>
